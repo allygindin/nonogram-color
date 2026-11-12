@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>Nonogram Color</title>
+  <meta name="description" content="Color nonogram logic puzzles that reveal pixel-art pictures. Works offline.">
+  <meta name="theme-color" content="#f8f4ec">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Nonogram">
+  <meta name="format-detection" content="telephone=no">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-screen="loading">
+  <!-- Level list -->
+  <section id="screen-levels" class="screen">
+    <header class="topbar list-top">
+      <div class="brand">
+        <h1>Nonogram <span>Color</span></h1>
+        <div id="progress-count" class="sub"></div>
+      </div>
+    </header>
+    <nav id="tabs" class="tabs" aria-label="Categories"></nav>
+    <div class="list-controls">
+      <label class="switch"><input type="checkbox" id="hide-solved"><span class="track"></span>Hide solved</label>
+      <label class="switch"><input type="checkbox" id="lives-toggle-list"><span class="track"></span>Lives mode</label>
+    </div>
+    <div class="scroll">
+      <div id="level-grid" class="level-grid"></div>
+    </div>
+  </section>
+
+  <!-- Puzzle -->
+  <section id="screen-puzzle" class="screen">
+    <header class="topbar">
+      <button id="btn-menu" class="icon-btn" aria-label="Menu">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+      </button>
+      <div class="title">
+        <div id="puzzle-title"></div>
+        <div id="puzzle-sub" class="sub"></div>
+      </div>
+      <div id="lives" class="lives"></div>
+    </header>
+
+    <div id="board" class="board">
+      <canvas id="board-canvas"></canvas>
+    </div>
+
+    <footer class="bottombar">
+      <div id="palette" class="palette" role="toolbar" aria-label="Colors"></div>
+      <div class="actions">
+        <button id="btn-undo" class="action">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14L4 9l5-5M4.5 9H14.5a5.5 5.5 0 0 1 0 11H11" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Undo
+        </button>
+        <button id="btn-zoom" class="action" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6" stroke="currentColor" stroke-width="2.2" fill="none"/><path d="M15 15l5 5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+          <span id="zoom-label">Zoom</span>
+        </button>
+        <button id="btn-hint" class="action">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.5 1.1 1.3 1.1 2.2h5c0-.9.4-1.7 1.1-2.2A6 6 0 0 0 12 3z" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round" stroke-linecap="round"/></svg>
+          Hint <span id="hint-count" class="count">3</span>
+        </button>
+      </div>
+    </footer>
+  </section>
+
+  <!-- Sheets -->
+  <div id="menu-sheet" class="sheet" role="dialog" aria-label="Menu">
+    <div class="card">
+      <button id="menu-levels" class="row-btn">All puzzles</button>
+      <button id="menu-restart" class="row-btn">Restart puzzle</button>
+      <label class="row-btn switch"><input type="checkbox" id="menu-lives"><span class="track"></span>Lives mode (3 lives, checks each cell)</label>
+      <button id="menu-close" class="row-btn subtle">Close</button>
+    </div>
+  </div>
+
+  <div id="win-sheet" class="sheet win" role="dialog" aria-label="Puzzle solved" data-dismiss="no">
+    <div class="card">
+      <div class="eyebrow">Solved!</div>
+      <h2 id="win-name"></h2>
+      <div id="win-stats" class="sub"></div>
+      <button id="btn-next" class="primary">Next puzzle</button>
+      <button id="win-levels" class="row-btn subtle">All puzzles</button>
+    </div>
+  </div>
+
+  <div id="lose-sheet" class="sheet" role="dialog" aria-label="Out of lives" data-dismiss="no">
+    <div class="card">
+      <div class="eyebrow danger">Out of lives</div>
+      <h2>Let's try that again</h2>
+      <div class="sub">The puzzle restarts from scratch.</div>
+      <button id="lose-retry" class="primary">Restart puzzle</button>
+      <button id="lose-levels" class="row-btn subtle">All puzzles</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div class="rotate-note">Turn your phone upright to play.</div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

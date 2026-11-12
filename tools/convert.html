@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Image to Puzzle</title>
+  <style>
+    :root { --ink: #2b2824; --muted: #7a7266; --line: #e4dccd; --page: #f8f4ec; --accent: #3a86ff; --bad: #e5383b; --good: #2a9d55; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--page); color: var(--ink); font: 15px/1.4 -apple-system, system-ui, sans-serif; }
+    main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
+    h1 { margin: 0 0 4px; font-size: 24px; }
+    p.lede { margin: 0 0 18px; color: var(--muted); }
+    .layout { display: grid; grid-template-columns: minmax(260px, 340px) 1fr; gap: 20px; align-items: start; }
+    @media (max-width: 760px) { .layout { grid-template-columns: 1fr; } }
+    .panel { background: #fff; border-radius: 14px; padding: 16px; box-shadow: 0 2px 10px rgba(60,50,30,0.07); }
+    label { display: block; font-size: 13px; font-weight: 600; color: #5d564b; margin: 12px 0 4px; }
+    label:first-child { margin-top: 0; }
+    input[type=text], input[type=number], select { width: 100%; height: 38px; border: 1px solid var(--line); border-radius: 9px; padding: 0 10px; font: inherit; background: #fff; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .check { display: flex; gap: 8px; align-items: center; font-weight: 500; margin-top: 10px; }
+    button { font: inherit; font-weight: 600; height: 40px; padding: 0 14px; border-radius: 10px; border: 0; background: #efe8db; cursor: pointer; }
+    button.primary { background: var(--ink); color: #fff; }
+    button:disabled { opacity: .45; cursor: default; }
+    .buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    #source { max-width: 100%; max-height: 160px; display: none; margin-top: 10px; border-radius: 8px; image-rendering: pixelated; }
+    #preview { display: block; max-width: 100%; image-rendering: pixelated; cursor: crosshair; border-radius: 6px; }
+    .status { margin: 12px 0; padding: 10px 12px; border-radius: 10px; background: #f1ece3; font-weight: 600; }
+    .status.ok { background: #e3f4e9; color: var(--good); }
+    .status.bad { background: #fde8e8; color: var(--bad); }
+    .swatches { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+    .swatches span { display: inline-flex; align-items: center; gap: 6px; font: 12px ui-monospace, monospace; background: #f1ece3; padding: 4px 8px 4px 4px; border-radius: 8px; }
+    .swatches i { width: 20px; height: 20px; border-radius: 5px; display: inline-block; box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }
+    .warn { color: #b06000; font-size: 13px; margin: 2px 0; }
+    textarea { width: 100%; height: 180px; font: 12px ui-monospace, monospace; border: 1px solid var(--line); border-radius: 9px; padding: 8px; margin-top: 10px; }
+    .hint { color: var(--muted); font-size: 13px; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Image → Puzzle</h1>
+  <p class="lede">Shrinks an image to the grid, reduces it to K colors, treats the most common edge color as empty, then runs the line-solver validator. Click cells in the preview to fix ambiguous spots by hand, or try Auto-fix.</p>
+  <div class="layout">
+    <section class="panel">
+      <label for="file">Image</label>
+      <input type="file" id="file" accept="image/*">
+      <img id="source" alt="Source image">
+      <div class="row">
+        <div><label for="w">Width</label><input type="number" id="w" min="5" max="30" value="15"></div>
+        <div><label for="h">Height</label><input type="number" id="h" min="5" max="30" value="15"></div>
+      </div>
+      <label class="check"><input type="checkbox" id="keep-aspect" checked> Height follows image aspect ratio</label>
+      <div class="row">
+        <div><label for="k">Colors</label><input type="number" id="k" min="2" max="6" value="4"></div>
+        <div><label for="method">Method</label>
+          <select id="method"><option value="kmeans">k-means (crisp)</option><option value="kmeans-avg">k-means (smooth)</option><option value="fixed">Fixed palette</option></select></div>
+      </div>
+      <label class="check"><input type="checkbox" id="despeckle" checked> Clean up single-pixel specks</label>
+      <label class="check"><input type="checkbox" id="fix-pale" checked> Darken colors too pale for white cells</label>
+      <div class="buttons">
+        <button class="primary" id="btn-convert" disabled>Convert</button>
+        <button id="btn-autofix" disabled>Auto-fix</button>
+      </div>
+      <label for="name">Name</label><input type="text" id="name" placeholder="Cat">
+      <div class="row">
+        <div><label for="id">ID (file name)</label><input type="text" id="id" placeholder="cat-02"></div>
+        <div><label for="category">Category</label><input type="text" id="category" value="Animals" list="cats"></div>
+      </div>
+      <datalist id="cats"><option>Symbols</option><option>Animals</option><option>Nature</option><option>Food</option><option>Objects</option></datalist>
+      <div class="buttons">
+        <button id="btn-download" disabled>Download JSON</button>
+        <button id="btn-copy" disabled>Copy JSON</button>
+      </div>
+      <p class="hint">Save the file into <code>levels/</code>, then run <code>node tools/validate.mjs</code> to index it and refresh the offline cache.</p>
+    </section>
+    <section class="panel">
+      <div id="status" class="status">Choose an image to start.</div>
+      <canvas id="preview" width="10" height="10"></canvas>
+      <div id="palette" class="swatches"></div>
+      <div id="warnings"></div>
+      <textarea id="out" readonly placeholder="Level JSON appears here"></textarea>
+    </section>
+  </div>
+</main>
+<script type="module" src="convert.js"></script>
+</body>
+</html>

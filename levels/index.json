@@ -1,0 +1,162 @@
+{
+  "version": 1,
+  "categories": [
+    "Symbols",
+    "Animals",
+    "Nature",
+    "Food",
+    "Objects"
+  ],
+  "levels": [
+    {
+      "id": "heart-01",
+      "file": "levels/heart-01.json",
+      "name": "Heart",
+      "category": "Symbols",
+      "width": 5,
+      "height": 5,
+      "colors": 2,
+      "difficulty": 0
+    },
+    {
+      "id": "smile-01",
+      "file": "levels/smile-01.json",
+      "name": "Smiley",
+      "category": "Symbols",
+      "width": 5,
+      "height": 5,
+      "colors": 2,
+      "difficulty": 0
+    },
+    {
+      "id": "sprout-01",
+      "file": "levels/sprout-01.json",
+      "name": "Sprout",
+      "category": "Nature",
+      "width": 5,
+      "height": 5,
+      "colors": 2,
+      "difficulty": 0
+    },
+    {
+      "id": "mushroom-01",
+      "file": "levels/mushroom-01.json",
+      "name": "Mushroom",
+      "category": "Nature",
+      "width": 5,
+      "height": 5,
+      "colors": 3,
+      "difficulty": 0
+    },
+    {
+      "id": "cherries-01",
+      "file": "levels/cherries-01.json",
+      "name": "Cherries",
+      "category": "Food",
+      "width": 8,
+      "height": 8,
+      "colors": 3,
+      "difficulty": 1
+    },
+    {
+      "id": "flower-01",
+      "file": "levels/flower-01.json",
+      "name": "Flower",
+      "category": "Nature",
+      "width": 8,
+      "height": 8,
+      "colors": 3,
+      "difficulty": 1
+    },
+    {
+      "id": "duck-01",
+      "file": "levels/duck-01.json",
+      "name": "Duck",
+      "category": "Animals",
+      "width": 8,
+      "height": 8,
+      "colors": 4,
+      "difficulty": 1
+    },
+    {
+      "id": "cat-01",
+      "file": "levels/cat-01.json",
+      "name": "Cat",
+      "category": "Animals",
+      "width": 10,
+      "height": 10,
+      "colors": 3,
+      "difficulty": 1
+    },
+    {
+      "id": "tree-01",
+      "file": "levels/tree-01.json",
+      "name": "Apple Tree",
+      "category": "Nature",
+      "width": 10,
+      "height": 10,
+      "colors": 4,
+      "difficulty": 2
+    },
+    {
+      "id": "icecream-01",
+      "file": "levels/icecream-01.json",
+      "name": "Ice Cream",
+      "category": "Food",
+      "width": 10,
+      "height": 10,
+      "colors": 4,
+      "difficulty": 2
+    },
+    {
+      "id": "fish-01",
+      "file": "levels/fish-01.json",
+      "name": "Fish",
+      "category": "Animals",
+      "width": 10,
+      "height": 10,
+      "colors": 5,
+      "difficulty": 2
+    },
+    {
+      "id": "house-01",
+      "file": "levels/house-01.json",
+      "name": "House",
+      "category": "Objects",
+      "width": 10,
+      "height": 10,
+      "colors": 5,
+      "difficulty": 2
+    },
+    {
+      "id": "owl-01",
+      "file": "levels/owl-01.json",
+      "name": "Owl",
+      "category": "Animals",
+      "width": 15,
+      "height": 15,
+      "colors": 5,
+      "difficulty": 3
+    },
+    {
+      "id": "rocket-01",
+      "file": "levels/rocket-01.json",
+      "name": "Rocket",
+      "category": "Objects",
+      "width": 15,
+      "height": 15,
+      "colors": 5,
+      "difficulty": 3
+    },
+    {
+      "id": "lighthouse-01",
+      "file": "levels/lighthouse-01.json",
+      "name": "Lighthouse",
+      "category": "Objects",
+      "width": 20,
+      "height": 20,
+      "colors": 6,
+      "difficulty": 3
+    }
+  ]
+}
