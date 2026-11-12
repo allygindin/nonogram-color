@@ -22,6 +22,9 @@ export class Game {
     this.flags = new Uint8Array(this.n);
     this.rowSolved = new Uint8Array(this.h);
     this.colSolved = new Uint8Array(this.w);
+    // Per clue number: 1 when that block is done (see blocksDone).
+    this.rowDone = level.clues.rows.map((cl) => new Uint8Array(cl.length));
+    this.colDone = level.clues.cols.map((cl) => new Uint8Array(cl.length));
     this.livesMode = opts.livesMode !== false;
     this.onEvent = opts.onEvent || (() => {});
     this.stroke = null;
@@ -89,12 +92,18 @@ export class Game {
   }
 
   checkRow(r) {
-    this.rowSolved[r] = clueEqual(lineClue(this.row(r)), this.level.clues.rows[r]) ? 1 : 0;
+    const have = lineClue(this.row(r));
+    const want = this.level.clues.rows[r];
+    this.rowSolved[r] = clueEqual(have, want) ? 1 : 0;
+    blocksDone(have, want, this.rowDone[r]);
     return this.rowSolved[r] === 1;
   }
 
   checkCol(c) {
-    this.colSolved[c] = clueEqual(lineClue(this.col(c)), this.level.clues.cols[c]) ? 1 : 0;
+    const have = lineClue(this.col(c));
+    const want = this.level.clues.cols[c];
+    this.colSolved[c] = clueEqual(have, want) ? 1 : 0;
+    blocksDone(have, want, this.colDone[c]);
     return this.colSolved[c] === 1;
   }
 
@@ -348,4 +357,25 @@ export class Game {
     this.commit(changes);
     return best;
   }
+}
+
+// Marks which clue numbers are done, reading the colored runs the player has
+// drawn in the line. Runs are matched against the clue from the start of the
+// line and, separately, from the end; each side stops at the first run that
+// doesn't match. So the first and last numbers gray out as soon as their
+// block is colored, and a middle number grays out only when every block
+// between it and one end is colored too.
+export function blocksDone(have, want, out) {
+  out.fill(0);
+  const n = Math.min(have.length, want.length);
+  const same = (a, b) => a.len === b.len && a.color === b.color;
+  let a = 0;
+  while (a < n && same(have[a], want[a])) out[a++] = 1;
+  // A drawn run can only count once, so the end side uses the runs the start
+  // side didn't (unless the whole line already matches).
+  const m = have.length === want.length && a === n ? n : Math.min(n, have.length - a);
+  for (let k = 0; k < m && same(have[have.length - 1 - k], want[want.length - 1 - k]); k++) {
+    out[want.length - 1 - k] = 1;
+  }
+  return out;
 }

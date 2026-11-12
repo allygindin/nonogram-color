@@ -96,5 +96,8 @@ Every puzzle is square, and its size sets its difficulty: **5×5 Easy, 10×10 Me
 - **Drag rule:** the first cell decides the action. Painting over empty cells fills only empty cells, and
   starting on a cell of the selected color clears only that color. A drag never wipes out other work.
   An X drag that starts on a colored cell marks the empty cells it crosses.
+- **Clue numbers gray out one at a time.** The first and last numbers gray as soon as a matching block
+  is colored at that end of the line. A middle number grays once every block between it and one
+  end is colored too. The whole line grays and fills with X when it matches its clue exactly.
 - **Hints** prefer cells in the most nearly-solved row or column. A cell you filled wrongly
   (in no-lives mode) is fixed first.

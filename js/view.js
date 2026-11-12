@@ -558,7 +558,7 @@ export class BoardView {
       }
       for (let j = 0; j < k; j++) {
         const y = bottom - (k - j - 0.5) * lh;
-        this.drawNumber(ctx, String(clue[j].len), x, y, clue[j].color, solved, px);
+        this.drawNumber(ctx, String(clue[j].len), x, y, clue[j].color, solved || g.colDone[c][j] === 1, px);
       }
     }
     ctx.restore();
@@ -602,7 +602,7 @@ export class BoardView {
       let x = right;
       for (let j = clue.length - 1; j >= 0; j--) {
         const t = String(clue[j].len);
-        this.drawNumber(ctx, t, x, y, clue[j].color, solved, px);
+        this.drawNumber(ctx, t, x, y, clue[j].color, solved || g.rowDone[r][j] === 1, px);
         x -= ctx.measureText(t).width + gap;
       }
     }

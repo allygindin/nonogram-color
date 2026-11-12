@@ -2,7 +2,7 @@
 import { lineClue, computeClues, clueEqual } from '../js/clues.js';
 import { solveLine, solveGrid, validateSolution } from '../js/solver.js';
 import { prepareLevel } from '../js/level.js';
-import { Game, X, F_ERROR, F_HINT } from '../js/game.js';
+import { Game, blocksDone, X, F_ERROR, F_HINT } from '../js/game.js';
 
 let passed = 0;
 let failed = 0;
@@ -218,6 +218,22 @@ test('solved line greys and auto-fills X; undo reverts all of it', () => {
   g.undo();
   eq(Array.from(g.cells).slice(0, 3), [0, 0, 0]);
   eq(g.rowSolved[0], 0);
+});
+
+test('clue numbers gray from the ends inward', () => {
+  const B = (len, color) => ({ len, color });
+  const want = [B(1, 1), B(2, 2), B(3, 1), B(1, 2)];
+  const done = (have) => Array.from(blocksDone(have, want, new Uint8Array(4)));
+  eq(done([]), [0, 0, 0, 0]);
+  eq(done([B(1, 1)]), [1, 0, 0, 0], 'first block colored');
+  eq(done([B(1, 2)]), [0, 0, 0, 1], 'last block colored');
+  eq(done([B(2, 2)]), [0, 0, 0, 0], 'a middle block alone stays');
+  eq(done([B(1, 1), B(2, 2)]), [1, 1, 0, 0], 'middle grays once everything before it is done');
+  eq(done([B(1, 1), B(2, 2), B(1, 2)]), [1, 1, 0, 1]);
+  eq(done([B(1, 1), B(2, 1)]), [1, 0, 0, 0], 'partial block does not count');
+  const two = [B(1, 1), B(1, 1)];
+  eq(Array.from(blocksDone([B(1, 1)], two, new Uint8Array(2))), [1, 0], 'one run grays one number');
+  eq(Array.from(blocksDone(two, two, new Uint8Array(2))), [1, 1]);
 });
 
 test('win compares clues, not cells', () => {
