@@ -39,17 +39,19 @@
 <body>
 <main>
   <h1>Image → Puzzle</h1>
-  <p class="lede">Shrinks an image to the grid, reduces it to K colors, treats the most common edge color as empty, then runs the line-solver validator. Click cells in the preview to fix ambiguous spots by hand, or try Auto-fix.</p>
+  <p class="lede">Fits an image into a square grid, reduces it to K colors, treats the most common edge color as empty, then runs the line-solver validator. Click cells in the preview to fix ambiguous spots by hand, or try Auto-fix.</p>
   <div class="layout">
     <section class="panel">
       <label for="file">Image</label>
       <input type="file" id="file" accept="image/*">
       <img id="source" alt="Source image">
-      <div class="row">
-        <div><label for="w">Width</label><input type="number" id="w" min="5" max="30" value="15"></div>
-        <div><label for="h">Height</label><input type="number" id="h" min="5" max="30" value="15"></div>
-      </div>
-      <label class="check"><input type="checkbox" id="keep-aspect" checked> Height follows image aspect ratio</label>
+      <label for="size">Grid size</label>
+      <select id="size">
+        <option value="5">5 × 5 (Easy)</option>
+        <option value="10" selected>10 × 10 (Medium)</option>
+        <option value="15">15 × 15 (Hard)</option>
+        <option value="20">20 × 20 (Expert)</option>
+      </select>
       <div class="row">
         <div><label for="k">Colors</label><input type="number" id="k" min="2" max="6" value="4"></div>
         <div><label for="method">Method</label>

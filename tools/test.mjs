@@ -185,6 +185,29 @@ test('retreating a drag restores cells', () => {
   ok(g.cells[2] !== 1, 'retreated cell not painted');
 });
 
+test('dragging X marks every empty cell along the line', () => {
+  const g = new Game(mkLevel(), { livesMode: true });
+  g.beginStroke(2, 0, X);
+  g.strokeTo(0, 0);
+  g.endStroke();
+  eq([g.cells[0], g.cells[3], g.cells[6]], [1, X, X], 'stops before the colored cell in lives mode');
+  const h = new Game(mkLevel(), { livesMode: false });
+  h.beginStroke(1, 0, X);
+  h.strokeTo(1, 2);
+  h.endStroke();
+  eq(Array.from(h.cells).slice(3, 6), [X, X, X]);
+  eq(h.undoStack.length, 1, 'one undo step');
+});
+
+test('X drag starting on a colored cell marks empties and keeps the color', () => {
+  const g = new Game(mkLevel(), { livesMode: false });
+  g.beginStroke(1, 1, 2); g.endStroke();
+  g.beginStroke(1, 1, X);
+  g.strokeTo(1, 0);
+  g.endStroke();
+  eq([g.cells[3], g.cells[4]], [X, 2]);
+});
+
 test('solved line greys and auto-fills X; undo reverts all of it', () => {
   const g = new Game(mkLevel(), { livesMode: false });
   g.beginStroke(0, 0, 1);

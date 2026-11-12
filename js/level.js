@@ -4,13 +4,12 @@ import { computeClues } from './clues.js';
 
 export const DIFFICULTIES = ['Easy', 'Medium', 'Hard', 'Expert'];
 
-// Difficulty from grid size and number of colors.
-export function difficultyOf(width, height, colors) {
-  const score = Math.max(width, height) + 1.5 * Math.max(0, colors - 2);
-  if (score < 8) return 0;
-  if (score < 12.5) return 1;
-  if (score < 18) return 2;
-  return 3;
+// Every puzzle is square, and its size sets its difficulty:
+// Easy 5x5, Medium 10x10, Hard 15x15, Expert 20x20.
+export const SIZES = [5, 10, 15, 20];
+
+export function difficultyOf(width) {
+  return SIZES.indexOf(width);
 }
 
 // Checks the raw JSON shape. Returns a list of error strings (empty = OK).
@@ -22,6 +21,9 @@ export function checkLevelShape(json) {
   const { width, height, palette, solution } = json;
   if (!Number.isInteger(width) || width < 1) errs.push('bad "width"');
   if (!Number.isInteger(height) || height < 1) errs.push('bad "height"');
+  if (Number.isInteger(width) && Number.isInteger(height) && (width !== height || !SIZES.includes(width))) {
+    errs.push(`size ${width}x${height} is not allowed; use 5x5 (Easy), 10x10 (Medium), 15x15 (Hard) or 20x20 (Expert)`);
+  }
   if (!Array.isArray(palette) || palette.length < 1) errs.push('bad "palette"');
   else palette.forEach((p, i) => {
     if (!/^#[0-9a-fA-F]{6}$/.test(p)) errs.push(`palette[${i}] is not a #rrggbb color`);
@@ -63,6 +65,6 @@ export function prepareLevel(json) {
     K,
     solution,
     clues,
-    difficulty: difficultyOf(width, height, K),
+    difficulty: difficultyOf(width),
   };
 }

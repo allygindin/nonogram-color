@@ -47,7 +47,7 @@ npm run validate     # validates all levels, writes levels/index.json, refreshes
 **Option B: JSON by hand.** Drop a file in `levels/` (format below) and run `npm run validate`.
 
 **Option C: from an image.** Run `npm run serve` and open `http://localhost:8080/tools/convert.html`.
-Pick an image, the grid size and the number of colors. Ambiguous cells are hatched: click cells to
+Pick an image, the grid size (5, 10, 15 or 20) and the number of colors. The image is fitted into a square. Ambiguous cells are hatched: click cells to
 edit them, or press Auto-fix. Download the JSON into `levels/`, then run `npm run validate`.
 
 If a level fails, the validator prints a map with `?` on every cell that logic can't pin down.
@@ -71,7 +71,8 @@ version. Without that, installed phones won't pick up new levels or code.
 ```
 
 `0` = empty, `1..K` = palette index (1-based). Clues are computed when a level loads and are never stored.
-Difficulty (Easy / Medium / Hard / Expert) comes from grid size and number of colors.
+Every puzzle is square, and its size sets its difficulty: **5×5 Easy, 10×10 Medium, 15×15 Hard,
+20×20 Expert**. The validator rejects any other size.
 
 ## How it's organized
 
@@ -94,5 +95,6 @@ Difficulty (Easy / Medium / Hard / Expert) comes from grid size and number of co
   empty cell, a red corner for a filled one). The drag stops at that cell.
 - **Drag rule:** the first cell decides the action. Painting over empty cells fills only empty cells, and
   starting on a cell of the selected color clears only that color. A drag never wipes out other work.
+  An X drag that starts on a colored cell marks the empty cells it crosses.
 - **Hints** prefer cells in the most nearly-solved row or column. A cell you filled wrongly
   (in no-lives mode) is fixed first.

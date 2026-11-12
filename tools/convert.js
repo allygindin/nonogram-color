@@ -75,13 +75,17 @@ function kmeans(points, k, iters = 30) {
 
 // Averages the image over each grid cell. Returns [{ lab, rgb, alpha }].
 function sampleCells(img, w, h) {
-  const scale = Math.min(1, 640 / Math.max(img.naturalWidth, img.naturalHeight));
-  const cw = Math.max(w, Math.round(img.naturalWidth * scale));
-  const ch = Math.max(h, Math.round(img.naturalHeight * scale));
+  // Puzzles are square: fit the whole image inside a square canvas and
+  // center it. The transparent margin reads as white, which usually
+  // becomes the empty color.
+  const side = Math.max(w, Math.min(640, Math.max(img.naturalWidth, img.naturalHeight)));
+  const cw = side, ch = side;
+  const fit = side / Math.max(img.naturalWidth, img.naturalHeight);
+  const dw = Math.round(img.naturalWidth * fit), dh = Math.round(img.naturalHeight * fit);
   const cv = document.createElement('canvas');
   cv.width = cw; cv.height = ch;
   const ctx = cv.getContext('2d');
-  ctx.drawImage(img, 0, 0, cw, ch);
+  ctx.drawImage(img, Math.floor((cw - dw) / 2), Math.floor((ch - dh) / 2), dw, dh);
   const data = ctx.getImageData(0, 0, cw, ch).data;
   const cells = [];
   cells.pixels = { data, cw, ch };
@@ -351,8 +355,8 @@ function finish() {
 
 function convert() {
   if (!state.img) return;
-  const w = Math.max(5, Math.min(30, +$('#w').value | 0));
-  const h = Math.max(5, Math.min(30, +$('#h').value | 0));
+  const w = +$('#size').value || 10;
+  const h = w;
   const K = Math.max(2, Math.min(6, +$('#k').value | 0));
   const cells = sampleCells(state.img, w, h);
   let { grid, palette } = quantize(cells, w, h, K, $('#method').value);
@@ -364,12 +368,6 @@ function convert() {
   finish();
 }
 
-function syncAspect() {
-  if (!state.img || !$('#keep-aspect').checked) return;
-  const w = +$('#w').value | 0;
-  $('#h').value = Math.max(5, Math.min(30, Math.round((w * state.img.naturalHeight) / state.img.naturalWidth)));
-}
-
 $('#file').addEventListener('change', (e) => {
   const f = e.target.files[0];
   if (!f) return;
@@ -378,14 +376,12 @@ $('#file').addEventListener('change', (e) => {
     state.img = img;
     img.style.display = 'block';
     if (!$('#name').value) $('#name').value = f.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase());
-    syncAspect();
     $('#btn-convert').disabled = false;
     convert();
   };
   img.src = URL.createObjectURL(f);
 });
-$('#w').addEventListener('change', syncAspect);
-$('#keep-aspect').addEventListener('change', syncAspect);
+$('#size').addEventListener('change', () => state.img && convert());
 $('#btn-convert').addEventListener('click', convert);
 $('#btn-autofix').addEventListener('click', autoFix);
 ['#name', '#id', '#category'].forEach((s) => $(s).addEventListener('input', () => state.grid && ($('#out').value = levelJson().text)));
@@ -420,6 +416,6 @@ $('#btn-copy').addEventListener('click', async () => {
 // For automated checks: window.__convertFromUrl(url)
 window.__convertFromUrl = (url) => new Promise((resolve) => {
   const img = $('#source');
-  img.onload = () => { state.img = img; img.style.display = 'block'; syncAspect(); $('#btn-convert').disabled = false; convert(); resolve(validate()); };
+  img.onload = () => { state.img = img; img.style.display = 'block'; $('#btn-convert').disabled = false; convert(); resolve(validate()); };
   img.src = url;
 });

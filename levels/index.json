@@ -49,12 +49,12 @@
       "difficulty": 0
     },
     {
-      "id": "cherries-01",
-      "file": "levels/cherries-01.json",
-      "name": "Cherries",
-      "category": "Food",
-      "width": 8,
-      "height": 8,
+      "id": "cat-01",
+      "file": "levels/cat-01.json",
+      "name": "Cat",
+      "category": "Animals",
+      "width": 10,
+      "height": 10,
       "colors": 3,
       "difficulty": 1
     },
@@ -63,26 +63,6 @@
       "file": "levels/flower-01.json",
       "name": "Flower",
       "category": "Nature",
-      "width": 8,
-      "height": 8,
-      "colors": 3,
-      "difficulty": 1
-    },
-    {
-      "id": "duck-01",
-      "file": "levels/duck-01.json",
-      "name": "Duck",
-      "category": "Animals",
-      "width": 8,
-      "height": 8,
-      "colors": 4,
-      "difficulty": 1
-    },
-    {
-      "id": "cat-01",
-      "file": "levels/cat-01.json",
-      "name": "Cat",
-      "category": "Animals",
       "width": 10,
       "height": 10,
       "colors": 3,
@@ -96,7 +76,27 @@
       "width": 10,
       "height": 10,
       "colors": 4,
-      "difficulty": 2
+      "difficulty": 1
+    },
+    {
+      "id": "cherries-01",
+      "file": "levels/cherries-01.json",
+      "name": "Cherries",
+      "category": "Food",
+      "width": 10,
+      "height": 10,
+      "colors": 4,
+      "difficulty": 1
+    },
+    {
+      "id": "duck-01",
+      "file": "levels/duck-01.json",
+      "name": "Duck",
+      "category": "Animals",
+      "width": 10,
+      "height": 10,
+      "colors": 4,
+      "difficulty": 1
     },
     {
       "id": "icecream-01",
@@ -106,7 +106,7 @@
       "width": 10,
       "height": 10,
       "colors": 4,
-      "difficulty": 2
+      "difficulty": 1
     },
     {
       "id": "fish-01",
@@ -116,7 +116,7 @@
       "width": 10,
       "height": 10,
       "colors": 5,
-      "difficulty": 2
+      "difficulty": 1
     },
     {
       "id": "house-01",
@@ -126,7 +126,7 @@
       "width": 10,
       "height": 10,
       "colors": 5,
-      "difficulty": 2
+      "difficulty": 1
     },
     {
       "id": "owl-01",
@@ -136,7 +136,7 @@
       "width": 15,
       "height": 15,
       "colors": 5,
-      "difficulty": 3
+      "difficulty": 2
     },
     {
       "id": "rocket-01",
@@ -146,7 +146,7 @@
       "width": 15,
       "height": 15,
       "colors": 5,
-      "difficulty": 3
+      "difficulty": 2
     },
     {
       "id": "lighthouse-01",

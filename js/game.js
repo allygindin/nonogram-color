@@ -159,12 +159,22 @@ export class Game {
     if (this.stroke) this.endStroke();
     const i = this.idx(r, c);
     const v0 = this.flags[i] ? 0 : this.cells[i];
+    // The first cell decides the action: starting on the selected value
+    // clears that value; otherwise matching cells get the selected value.
+    // An X drag that starts on a locked or colored cell marks empty cells,
+    // so you can sweep X's across a line without clearing your colors.
+    let match = v0 === tool ? tool : v0;
+    let to = v0 === tool ? 0 : tool;
+    if (tool === X && (this.flags[i] || v0 > 0)) {
+      match = 0;
+      to = X;
+    }
     const st = {
       r0: r,
       c0: c,
       axis: null,
-      match: v0 === tool ? tool : v0,
-      to: v0 === tool ? 0 : tool,
+      match,
+      to,
       applied: new Map(), // cell index -> value before the stroke
       stopped: false,
       rows: new Set([r]),

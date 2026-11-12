@@ -65,40 +65,46 @@ GGSGG`,
     id: 'duck-01', name: 'Duck', category: 'Animals',
     colors: { Y: C.amber, O: C.orange, K: C.ink, B: C.blue },
     art: `
-..YYY...
-.YYKY...
-.YYYYOO.
-..YY....
-.YYYYYY.
-YYYYYYYY
-.YYYYYY.
-BBBBBBBB`,
+...YYY....
+..YYYYY...
+..YYKYY...
+..YYYYYOO.
+...YYYYOO.
+....YY....
+.YYYYYYYY.
+YYYYYYYYYY
+.YYYYYYYY.
+BBBBBBBBBB`,
   },
   {
     id: 'cherries-01', name: 'Cherries', category: 'Food',
-    colors: { G: C.leaf, R: C.red, P: C.pink },
+    colors: { G: C.leaf, S: C.brown, R: C.red, P: C.pink },
     art: `
-....GGG.
-....G.G.
-...GG.G.
-..G...G.
-.RR..RR.
-RPRRRPRR
-RRRRRRRR
-.RR..RR.`,
+......GGG.
+.....GGGG.
+..SSSSSS..
+..S....S..
+..S....S..
+.RRR..RRR.
+RRPRR.RPRR
+RRRRR.RRRR
+RRRRR.RRRR
+.RRR..RRR.`,
   },
   {
     id: 'flower-01', name: 'Flower', category: 'Nature',
     colors: { P: C.pink, Y: C.amber, G: C.leaf },
     art: `
-..PPP...
-.PPYPP..
-.PYYYP..
-.PPYPP..
-..PPP...
-...G.GG.
-...GGG..
-...G....`,
+...PPPP...
+..PPPPPP..
+.PPPYYPPP.
+.PPYYYYPP.
+.PPPYYPPP.
+..PPPPPP..
+...PGGP...
+.GG.G.....
+..GGG.....
+....G.....`,
   },
   {
     id: 'cat-01', name: 'Cat', category: 'Animals',
