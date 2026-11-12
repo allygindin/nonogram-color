@@ -93,6 +93,8 @@ Every puzzle is square, and its size sets its difficulty: **5×5 Easy, 10×10 Me
 - **Lives mode** (on by default, toggle in the menu) checks each placement against the stored solution.
   A wrong placement costs a life. The cell is then locked showing its true value (a red X for an
   empty cell, a red corner for a filled one). The drag stops at that cell.
+- **Used-up colors** (lives mode): once a color is placed everywhere it belongs, its swatch fades with a
+  check mark and can't be selected. The selection moves to the next color still needed.
 - **Drag rule:** the first cell decides the action. Painting over empty cells fills only empty cells, and
   starting on a cell of the selected color clears only that color. A drag never wipes out other work.
   An X drag that starts on a colored cell marks the empty cells it crosses.

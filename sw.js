@@ -1,7 +1,7 @@
 // Service worker: precaches the whole app (code, icons, every level) so it
 // runs fully offline once installed. `node tools/validate.mjs` regenerates the
 // file list and VERSION below; a new VERSION makes phones fetch a fresh copy.
-const VERSION = 'c32d853854d7';
+const VERSION = 'e1f94665126c';
 const CACHE = `nonogram-color-${VERSION}`;
 const ASSETS = [
   // <assets>

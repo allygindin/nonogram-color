@@ -236,6 +236,19 @@ test('clue numbers gray from the ends inward', () => {
   eq(Array.from(blocksDone(two, two, new Uint8Array(2))), [1, 1]);
 });
 
+test('colorDone: lives mode only, once every cell of the color is placed', () => {
+  const g = new Game(mkLevel(), { livesMode: true });
+  eq(g.colorDone(1), false);
+  g.beginStroke(0, 0, 1); g.strokeTo(0, 1); g.endStroke();
+  eq(g.colorDone(1), true);
+  eq(g.colorDone(2), false);
+  g.undo();
+  eq(g.colorDone(1), false, 'undo brings it back');
+  const h = new Game(mkLevel(), { livesMode: false });
+  h.beginStroke(0, 0, 1); h.strokeTo(0, 1); h.endStroke();
+  eq(h.colorDone(1), false, 'off without lives');
+});
+
 test('win compares clues, not cells', () => {
   // Ambiguous 2x2 diagonal: the anti-diagonal also satisfies the clues.
   const lvl = prepareLevel({ id: 'd', name: 'D', width: 2, height: 2, palette: ['#000000'], solution: [[1, 0], [0, 1]] });

@@ -136,6 +136,11 @@ body.revealing .bottombar { opacity: 0; transform: translateY(20px); pointer-eve
   box-shadow: 0 0 0 3px var(--panel), 0 0 0 5.5px var(--ink), 0 4px 10px rgba(0,0,0,0.18);
 }
 .swatch:active { transform: scale(0.94); }
+.swatch:disabled { opacity: 0.22; transform: scale(0.86); box-shadow: none; }
+.swatch:disabled::after {
+  content: ''; position: absolute; left: 50%; top: 46%; width: 9px; height: 17px;
+  border: solid #fff; border-width: 0 3.5px 3.5px 0; transform: translate(-50%, -50%) rotate(45deg);
+}
 .xtool { background: #f1ece3; color: #6f675b; display: grid; place-items: center; }
 .xtool svg { width: 24px; height: 24px; }
 

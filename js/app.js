@@ -198,6 +198,28 @@ function setTool(t) {
   document.querySelectorAll('#palette .swatch').forEach((b) => b.classList.toggle('selected', Number(b.dataset.tool) === t));
 }
 
+// In lives mode a color that's been placed everywhere it belongs can't be
+// selected. If it was the selected one, move to the next color still needed
+// (or the X tool when every color is done).
+function updatePalette() {
+  const g = state.game;
+  const K = state.level.palette.length;
+  const done = [];
+  for (let k = 1; k <= K; k++) done[k] = g.colorDone(k);
+  document.querySelectorAll('#palette .swatch').forEach((b) => {
+    const t = Number(b.dataset.tool);
+    b.disabled = t > 0 && done[t];
+  });
+  if (state.tool > 0 && done[state.tool]) {
+    let next = X;
+    for (let step = 1; step < K; step++) {
+      const k = ((state.tool - 1 + step) % K) + 1;
+      if (!done[k]) { next = k; break; }
+    }
+    setTool(next);
+  }
+}
+
 function updateHud() {
   const g = state.game;
   if (!g) return;
@@ -209,6 +231,7 @@ function updateHud() {
   } else {
     lives.hidden = true;
   }
+  updatePalette();
   $('#hint-count').textContent = String(g.hintsLeft);
   $('#btn-hint').disabled = g.hintsLeft <= 0 || g.won;
   $('#btn-undo').disabled = !g.undoStack.length || g.won;

@@ -117,6 +117,20 @@ export class Game {
   }
 
   // Is placing value v at cell i correct according to the stored solution?
+  // Lives mode only: true once every cell of color k is placed. Wrong
+  // placements are rejected in lives mode, so a full count means done.
+  colorDone(k) {
+    if (!this.livesMode) return false;
+    let need = 0;
+    let have = 0;
+    const sol = this.level.solution;
+    for (let i = 0; i < this.n; i++) {
+      if (sol[i] === k) need++;
+      if (this.cells[i] === k) have++;
+    }
+    return have >= need;
+  }
+
   isCorrect(i, v) {
     const sol = this.level.solution[i];
     return v === X ? sol === 0 : sol === v;
