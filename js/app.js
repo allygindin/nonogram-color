@@ -366,8 +366,43 @@ document.addEventListener('visibilitychange', () => {
   if (document.hidden) {
     input.reset();
     save();
+  } else if (swReg) {
+    // iOS resumes a home-screen app without reloading it, so check for a
+    // new version every time it comes back to the foreground.
+    swReg.update().catch(() => {});
   }
 });
+
+// ---- Updates ---------------------------------------------------------
+// A new version installs in the background (sw.js calls skipWaiting and
+// clients.claim). When it takes over, reload so the new code runs right away.
+// Progress is saved after every move, so the puzzle resumes where it was.
+let swReg = null;
+let reloadPending = false;
+
+function setupUpdates() {
+  const hadController = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.register('sw.js')
+    .then((reg) => { swReg = reg; })
+    .catch((e) => console.warn('SW registration failed', e));
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!hadController) return; // first install, nothing to refresh
+    reloadPending = true;
+    reloadWhenIdle();
+  });
+}
+
+function reloadWhenIdle() {
+  if (!reloadPending) return;
+  // Don't interrupt a drag or the win animation; try again shortly.
+  if (input.mode === 'paint' || input.mode === 'gesture' || document.body.classList.contains('revealing')) {
+    setTimeout(reloadWhenIdle, 1000);
+    return;
+  }
+  reloadPending = false;
+  save();
+  location.reload();
+}
 
 // ---- Boot ----------------------------------------------------------------
 
@@ -406,9 +441,7 @@ async function boot() {
   }
   document.body.classList.add('ready');
 
-  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-    navigator.serviceWorker.register('sw.js').catch((e) => console.warn('SW registration failed', e));
-  }
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') setupUpdates();
 }
 
 // Debug hooks (used by automated UI checks; harmless in production).
