@@ -259,6 +259,23 @@ test('win compares clues, not cells', () => {
   ok(won, 'alternate solution should win');
 });
 
+test('lives mode: placed cells are never cleared or overwritten', () => {
+  const g = new Game(mkLevel(), { livesMode: true });
+  g.beginStroke(1, 1, 2); g.endStroke();          // correct blue
+  g.beginStroke(1, 1, 2); g.endStroke();          // same color again: stays
+  eq(g.cells[4], 2);
+  g.beginStroke(1, 1, 1); g.endStroke();          // other color over it: no error
+  eq([g.cells[4], g.lives], [2, 3]);
+  g.beginStroke(1, 0, X); g.endStroke();
+  g.beginStroke(1, 0, X); g.endStroke();          // X again: stays
+  eq(g.cells[3], X);
+  g.beginStroke(1, 1, X); g.strokeTo(1, 2); g.endStroke(); // drag from a color: X's the empties
+  eq(Array.from(g.cells).slice(3, 6), [X, 2, X]);
+  eq(g.lives, 3);
+  g.beginStroke(0, 0, 1); g.strokeTo(1, 0); g.endStroke(); // drag red down col 0 onto an X
+  eq([g.cells[0], g.cells[3], g.lives], [1, X, 3]);
+});
+
 test('lives mode: wrong placement costs a life, locks the cell, stops the drag', () => {
   const g = new Game(mkLevel(), { livesMode: true });
   g.beginStroke(1, 0, 1); // solution is empty here

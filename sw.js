@@ -1,7 +1,7 @@
 // Service worker: precaches the whole app (code, icons, every level) so it
 // runs fully offline once installed. `node tools/validate.mjs` regenerates the
 // file list and VERSION below; a new VERSION makes phones fetch a fresh copy.
-const VERSION = 'e1f94665126c';
+const VERSION = '3c4453f44375';
 const CACHE = `nonogram-color-${VERSION}`;
 const ASSETS = [
   // <assets>
@@ -17,6 +17,7 @@ const ASSETS = [
   './js/level.js',
   './js/solver.js',
   './js/storage.js',
+  './js/version.js',
   './js/view.js',
   './icons/apple-touch-icon.png',
   './icons/icon-192.png',

@@ -145,8 +145,14 @@ const assets = [
   ...entries.map((e) => e.file),
 ].filter((f) => fs.existsSync(path.join(root, f)));
 const hash = crypto.createHash('sha256');
-for (const f of assets) hash.update(f).update(fs.readFileSync(path.join(root, f)));
+for (const f of assets) {
+  if (f === 'js/version.js') continue; // written from the hash below
+  hash.update(f).update(fs.readFileSync(path.join(root, f)));
+}
 const version = hash.digest('hex').slice(0, 12);
+// The app shows this in its menu, so you can tell which version a phone runs.
+fs.writeFileSync(path.join(root, 'js/version.js'),
+  `// Written by tools/validate.mjs. Do not edit.\nexport const VERSION = '${version}';\n`);
 
 const swPath = path.join(root, 'sw.js');
 let sw = fs.readFileSync(swPath, 'utf8');

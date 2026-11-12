@@ -1,6 +1,7 @@
 // App shell: screens, HUD, saving, level list.
 import { prepareLevel, DIFFICULTIES } from './level.js';
 import { Game, X, MAX_LIVES } from './game.js';
+import { VERSION } from './version.js';
 import { BoardView } from './view.js';
 import { BoardInput } from './input.js';
 import * as store from './storage.js';
@@ -471,4 +472,5 @@ async function boot() {
 window.__game = () => state.game;
 window.__view = () => view;
 
+$('#app-version').textContent = `Version ${VERSION.slice(0, 6)}`;
 boot();

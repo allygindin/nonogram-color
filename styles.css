@@ -342,3 +342,5 @@ body.revealing .bottombar { opacity: 0; transform: translateY(20px); pointer-eve
     font-size: 18px; font-weight: 600;
   }
 }
+
+.version { text-align: center; font-size: 12px; color: var(--muted, #8a8174); padding-top: 4px; }
