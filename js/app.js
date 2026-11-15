@@ -1,5 +1,6 @@
 // App shell: screens, HUD, saving, level list.
-import { prepareLevel, DIFFICULTIES } from './level.js';
+import { prepareLevel, DIFFICULTIES, SIZES } from './level.js';
+import { generateLevel } from './generate.js';
 import { Game, X, MAX_LIVES } from './game.js';
 import { VERSION } from './version.js';
 import { BoardView } from './view.js';
@@ -102,6 +103,7 @@ function renderTabs() {
 function renderList() {
   if (!state.categories.includes(state.settings.category)) state.settings.category = 'All';
   renderTabs();
+  renderRandomButtons();
   const grid = $('#level-grid');
   grid.innerHTML = '';
   const cat = state.settings.category;
@@ -142,6 +144,61 @@ function renderList() {
   }
 }
 
+// ---- Random puzzles ----------------------------------------------------
+// One random puzzle per difficulty is kept (as level JSON under
+// `random.<d>`) until it's solved, so it can be resumed like any other.
+// Its id is `random-<d>`; progress saves under `progress.random-<d>`.
+
+const RANDOM_PREFIX = 'random-';
+const isRandom = (id) => typeof id === 'string' && id.startsWith(RANDOM_PREFIX);
+const randomDifficulty = (id) => Number(id.slice(RANDOM_PREFIX.length));
+
+function getLevel(id) {
+  if (state.byId.has(id)) return state.byId.get(id);
+  if (!isRandom(id)) return null;
+  const json = store.get(`random.${randomDifficulty(id)}`);
+  if (!json) return null;
+  try {
+    return prepareLevel(json);
+  } catch (e) {
+    console.warn('Bad saved random puzzle', e);
+    return null;
+  }
+}
+
+function newRandom(d) {
+  const json = generateLevel(d);
+  if (!json) {
+    toast('Could not make a puzzle. Try again');
+    return;
+  }
+  store.del(`progress.${json.id}`);
+  store.set(`random.${d}`, json);
+  openPuzzle(json.id);
+}
+
+// Resume an unfinished random puzzle of this difficulty, or make a new one.
+function playRandom(d) {
+  const id = RANDOM_PREFIX + d;
+  if (getLevel(id) && store.has(`progress.${id}`)) openPuzzle(id);
+  else newRandom(d);
+}
+
+function renderRandomButtons() {
+  const wrap = $('#random-buttons');
+  wrap.innerHTML = '';
+  DIFFICULTIES.forEach((name, d) => {
+    const n = SIZES[d];
+    const cont = store.has(`random.${d}`) && store.has(`progress.${RANDOM_PREFIX}${d}`);
+    const b = document.createElement('button');
+    b.className = `random-btn d${d}`;
+    b.setAttribute('aria-label', cont ? `Continue random ${name} puzzle` : `New random ${name} puzzle, ${n} by ${n}`);
+    b.innerHTML = `<span class="rb-name">${name}</span><span class="rb-size${cont ? ' cont' : ''}">${cont ? 'Continue' : `${n}×${n}`}</span>`;
+    b.addEventListener('click', () => playRandom(d));
+    wrap.appendChild(b);
+  });
+}
+
 function escapeHtml(s) {
   return s.replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]);
 }
@@ -149,7 +206,7 @@ function escapeHtml(s) {
 // ---- Puzzle ------------------------------------------------------------
 
 function openPuzzle(id) {
-  const level = state.byId.get(id);
+  const level = getLevel(id);
   if (!level) return;
   input.reset();
   closeSheets();
@@ -163,7 +220,8 @@ function openPuzzle(id) {
   });
   store.set('current', id);
   $('#puzzle-title').textContent = level.name;
-  $('#puzzle-sub').textContent = `${level.width}×${level.height} · ${DIFFICULTIES[level.difficulty]}`;
+  $('#puzzle-sub').textContent = `${level.width}×${level.height} · ${DIFFICULTIES[level.difficulty]}${isRandom(id) ? ' · Random' : ''}`;
+  $('#menu-new-random').hidden = !isRandom(id);
   showScreen('puzzle');
   buildPalette();
   view.setGame(state.game);
@@ -276,8 +334,13 @@ function onWon() {
   const g = state.game;
   const lvl = state.level;
   input.reset();
-  state.completed.add(lvl.id);
-  store.set('completed', [...state.completed]);
+  if (isRandom(lvl.id)) {
+    // Solved random puzzles are thrown away.
+    store.del(`random.${randomDifficulty(lvl.id)}`);
+  } else {
+    state.completed.add(lvl.id);
+    store.set('completed', [...state.completed]);
+  }
   store.del(`progress.${lvl.id}`);
   store.del('current');
   document.body.classList.add('revealing');
@@ -288,7 +351,13 @@ function onWon() {
     if (g.livesMode) parts.push(`${g.lives}/${MAX_LIVES} lives left`);
     parts.push(g.hintsUsed ? `${g.hintsUsed} hint${g.hintsUsed > 1 ? 's' : ''}` : 'no hints');
     $('#win-stats').textContent = parts.join(' · ');
-    $('#btn-next').hidden = !nextLevelId();
+    if (isRandom(lvl.id)) {
+      $('#btn-next').hidden = false;
+      $('#btn-next').textContent = `New ${DIFFICULTIES[lvl.difficulty]} puzzle`;
+    } else {
+      $('#btn-next').hidden = !nextLevelId();
+      $('#btn-next').textContent = 'Next puzzle';
+    }
     openSheet('#win-sheet');
   });
 }
@@ -340,6 +409,14 @@ $('#menu-restart').addEventListener('click', () => {
   closeSheets();
   if (state.game && confirm('Restart this puzzle? Your progress on it will be cleared.')) state.game.reset();
 });
+$('#menu-new-random').addEventListener('click', () => {
+  closeSheets();
+  const lvl = state.level;
+  if (!lvl || !isRandom(lvl.id)) return;
+  const g = state.game;
+  const started = g && g.cells.some((v) => v !== 0);
+  if (!started || confirm('Start a new random puzzle? Progress on this one will be lost.')) newRandom(lvl.difficulty);
+});
 $('#menu-lives').addEventListener('change', (e) => {
   state.settings.livesMode = e.target.checked;
   saveSettings();
@@ -349,6 +426,7 @@ $('#menu-lives').addEventListener('change', (e) => {
 
 $('#btn-next').addEventListener('click', () => {
   document.body.classList.remove('revealing');
+  if (isRandom(state.level.id)) return newRandom(state.level.difficulty);
   const id = nextLevelId();
   if (id) openPuzzle(id);
   else goToList();
@@ -458,7 +536,7 @@ async function boot() {
     console.error(e);
   }
   const want = params.get('play') || store.get('current');
-  if (want && state.byId.has(want) && (params.get('play') || !state.completed.has(want))) openPuzzle(want);
+  if (want && getLevel(want) && (params.get('play') || !state.completed.has(want))) openPuzzle(want);
   else {
     showScreen('levels');
     renderList();

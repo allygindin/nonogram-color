@@ -270,6 +270,29 @@ body.revealing .bottombar { opacity: 0; transform: translateY(20px); pointer-eve
 .diff.d3 { color: #d1263a; }
 .tile-dots { display: flex; gap: 3px; margin-top: 5px; }
 .tile-dots i { width: 9px; height: 9px; border-radius: 3px; }
+/* Random puzzle buttons */
+.random-box { margin: 0 0 12px; }
+.random-title { font-size: 13px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding: 2px 4px 6px; }
+.random-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.random-btn {
+  background: var(--panel);
+  border-radius: 12px;
+  min-height: 56px;
+  padding: 6px 4px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.04), 0 2px 8px rgba(60,50,30,0.06);
+  transition: transform .12s;
+}
+.random-btn:active { transform: scale(0.96); }
+.random-btn .rb-name { font-weight: 800; font-size: 15px; }
+.random-btn .rb-size { font-size: 12px; color: var(--muted); }
+.random-btn .rb-size.cont { color: var(--accent); font-weight: 700; }
+.random-btn.d0 .rb-name { color: #2a9d55; }
+.random-btn.d1 .rb-name { color: #c88a00; }
+.random-btn.d2 .rb-name { color: #e0601a; }
+.random-btn.d3 .rb-name { color: #d1263a; }
+.row-btn[hidden] { display: none; }
+
 .empty { grid-column: 1 / -1; text-align: center; color: var(--muted); padding: 40px 0; }
 
 /* ---- Sheets ---- */

@@ -1,7 +1,9 @@
 // Unit tests: node tools/test.mjs
 import { lineClue, computeClues, clueEqual } from '../js/clues.js';
 import { solveLine, solveGrid, validateSolution } from '../js/solver.js';
-import { prepareLevel } from '../js/level.js';
+import { prepareLevel, checkLevelShape, SIZES } from '../js/level.js';
+import { generateLevel } from '../js/generate.js';
+import { paletteWarnings, colorDistance } from '../js/color.js';
 import { Game, blocksDone, X, F_ERROR, F_HINT } from '../js/game.js';
 
 let passed = 0;
@@ -312,6 +314,32 @@ test('serialize / restore round trip', () => {
   const s = JSON.parse(JSON.stringify(g.serialize()));
   const g2 = new Game(mkLevel(), { livesMode: false, saved: s });
   eq(Array.from(g2.cells), Array.from(g.cells));
+});
+
+// ---- random puzzle generator ---------------------------------------------
+
+for (let d = 0; d < SIZES.length; d++) {
+  test(`generated puzzles are valid and uniquely solvable (difficulty ${d})`, () => {
+    for (let seed = 1; seed <= 25; seed++) {
+      const json = generateLevel(d, seed * 104729 + d);
+      ok(json, `seed ${seed}: no puzzle`);
+      eq(checkLevelShape(json), [], `seed ${seed} shape`);
+      eq(json.width, SIZES[d]);
+      eq(paletteWarnings(json.palette), [], `seed ${seed} palette`);
+      for (const a of json.palette) {
+        for (const b of json.palette) ok(a === b || colorDistance(a, b) >= 180, `seed ${seed}: ${a} and ${b} too alike`);
+      }
+      const lvl = prepareLevel(json);
+      const used = new Set(lvl.solution);
+      for (let k = 1; k <= lvl.K; k++) ok(used.has(k), `seed ${seed}: color ${k} unused`);
+      const res = validateSolution(lvl.solution, lvl.width, lvl.height, lvl.K);
+      ok(res.ok, `seed ${seed}: not solvable by logic (${res.status})`);
+    }
+  });
+}
+
+test('generator is reproducible from a seed', () => {
+  eq(generateLevel(2, 12345), generateLevel(2, 12345));
 });
 
 console.log(`${passed} passed, ${failed} failed`);

@@ -80,6 +80,7 @@ Every puzzle is square, and its size sets its difficulty: **5×5 Easy, 10×10 Me
 | --- | --- |
 | `js/clues.js` | Clue generation (shared with the Node tools) |
 | `js/solver.js` | DP line solver plus whole-grid propagation used by the validator |
+| `js/generate.js` | Random puzzle generator (blobby symmetric pictures, checked with the solver) |
 | `js/game.js` | Rules: strokes with row/column lock, undo, auto-X, lives, hints, win check |
 | `js/view.js` | Canvas renderer: pinned clues, zoom/pan, magnifier, overview map, win reveal |
 | `js/input.js` | Touch handling: 1 finger paints, 2 fingers pinch/pan |
@@ -103,5 +104,10 @@ Every puzzle is square, and its size sets its difficulty: **5×5 Easy, 10×10 Me
 - **Clue numbers gray out one at a time.** The first and last numbers gray as soon as a matching block
   is colored at that end of the line. A middle number grays once every block between it and one
   end is colored too. The whole line grays and fills with X when it matches its clue exactly.
+- **Random puzzles:** the Easy / Medium / Hard / Expert buttons above the level list make a new
+  puzzle (5×5, 10×10, 15×15, 20×20). Each one is an abstract, often mirrored pattern that the
+  solver has confirmed has one solution reachable by logic alone. One unfinished random puzzle per
+  difficulty is kept, so its button says **Continue**. Solved ones are thrown away. "New random
+  puzzle" in the menu swaps the current one for a fresh one.
 - **Hints** prefer cells in the most nearly-solved row or column. A cell you filled wrongly
   (in no-lives mode) is fixed first.

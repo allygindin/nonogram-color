@@ -1,7 +1,7 @@
 // Service worker: precaches the whole app (code, icons, every level) so it
 // runs fully offline once installed. `node tools/validate.mjs` regenerates the
 // file list and VERSION below; a new VERSION makes phones fetch a fresh copy.
-const VERSION = '3c4453f44375';
+const VERSION = '1c2682c898a0';
 const CACHE = `nonogram-color-${VERSION}`;
 const ASSETS = [
   // <assets>
@@ -13,6 +13,7 @@ const ASSETS = [
   './js/clues.js',
   './js/color.js',
   './js/game.js',
+  './js/generate.js',
   './js/input.js',
   './js/level.js',
   './js/solver.js',

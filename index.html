@@ -31,6 +31,10 @@
       <label class="switch"><input type="checkbox" id="lives-toggle-list"><span class="track"></span>Lives mode</label>
     </div>
     <div class="scroll">
+      <div class="random-box">
+        <div class="random-title">New random puzzle</div>
+        <div id="random-buttons" class="random-buttons"></div>
+      </div>
       <div id="level-grid" class="level-grid"></div>
     </div>
   </section>
@@ -75,6 +79,7 @@
   <div id="menu-sheet" class="sheet" role="dialog" aria-label="Menu">
     <div class="card">
       <button id="menu-levels" class="row-btn">All puzzles</button>
+      <button id="menu-new-random" class="row-btn" hidden>New random puzzle</button>
       <button id="menu-restart" class="row-btn">Restart puzzle</button>
       <label class="row-btn switch"><input type="checkbox" id="menu-lives"><span class="track"></span>Lives mode (3 lives, checks each cell)</label>
       <button id="menu-close" class="row-btn subtle">Close</button>
