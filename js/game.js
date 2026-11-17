@@ -92,18 +92,18 @@ export class Game {
   }
 
   checkRow(r) {
-    const have = lineClue(this.row(r));
+    const line = this.row(r);
     const want = this.level.clues.rows[r];
-    this.rowSolved[r] = clueEqual(have, want) ? 1 : 0;
-    blocksDone(have, want, this.rowDone[r]);
+    this.rowSolved[r] = clueEqual(lineClue(line), want) ? 1 : 0;
+    blocksDone(line, want, this.rowDone[r]);
     return this.rowSolved[r] === 1;
   }
 
   checkCol(c) {
-    const have = lineClue(this.col(c));
+    const line = this.col(c);
     const want = this.level.clues.cols[c];
-    this.colSolved[c] = clueEqual(have, want) ? 1 : 0;
-    blocksDone(have, want, this.colDone[c]);
+    this.colSolved[c] = clueEqual(lineClue(line), want) ? 1 : 0;
+    blocksDone(line, want, this.colDone[c]);
     return this.colSolved[c] === 1;
   }
 
@@ -376,23 +376,38 @@ export class Game {
   }
 }
 
-// Marks which clue numbers are done, reading the colored runs the player has
-// drawn in the line. Runs are matched against the clue from the start of the
-// line and, separately, from the end; each side stops at the first run that
-// doesn't match. So the first and last numbers gray out as soon as their
-// block is colored, and a middle number grays out only when every block
-// between it and one end is colored too.
-export function blocksDone(have, want, out) {
+// Marks which clue numbers are done, reading the line's cells (0 = empty,
+// X = marked empty, 1..K = color). Working in from the start of the line, a
+// number grays once its block is colored at the right length and every cell
+// before it is decided (colored or X), so one empty cell stops the walk. The
+// same walk runs in from the end. The cell just past a block may still be
+// empty.
+export function blocksDone(line, want, out) {
   out.fill(0);
-  const n = Math.min(have.length, want.length);
-  const same = (a, b) => a.len === b.len && a.color === b.color;
-  let a = 0;
-  while (a < n && same(have[a], want[a])) out[a++] = 1;
-  // A drawn run can only count once, so the end side uses the runs the start
-  // side didn't (unless the whole line already matches).
-  const m = have.length === want.length && a === n ? n : Math.min(n, have.length - a);
-  for (let k = 0; k < m && same(have[have.length - 1 - k], want[want.length - 1 - k]); k++) {
-    out[want.length - 1 - k] = 1;
-  }
+  const n = line.length;
+  // Walks from one end; returns how many numbers matched and the cell index
+  // just past the last matched block. `limit` stops it at the other side's
+  // matched cells so a drawn block counts only once.
+  const walk = (step, maxBlocks, limit) => {
+    let p = step > 0 ? 0 : n - 1;
+    let count = 0;
+    const inside = (i) => (step > 0 ? i < limit : i > limit);
+    while (count < maxBlocks && inside(p)) {
+      const v = line[p];
+      if (v === X) { p += step; continue; }
+      if (v <= 0) break;
+      let q = p;
+      while (inside(q) && line[q] === v) q += step;
+      const b = want[step > 0 ? count : want.length - 1 - count];
+      if (Math.abs(q - p) !== b.len || v !== b.color) break;
+      count++;
+      p = q;
+    }
+    return { count, p };
+  };
+  const front = walk(1, want.length, n);
+  for (let j = 0; j < front.count; j++) out[j] = 1;
+  const back = walk(-1, want.length - front.count, front.p - 1);
+  for (let k = 0; k < back.count; k++) out[want.length - 1 - k] = 1;
   return out;
 }

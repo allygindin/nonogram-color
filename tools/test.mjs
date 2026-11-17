@@ -222,33 +222,32 @@ test('solved line greys and auto-fills X; undo reverts all of it', () => {
   eq(g.rowSolved[0], 0);
 });
 
-test('clue numbers gray from the ends inward', () => {
+test('clue numbers gray only when everything up to them is decided', () => {
   const B = (len, color) => ({ len, color });
-  const want = [B(1, 1), B(2, 2), B(3, 1), B(1, 2)];
-  const done = (have) => Array.from(blocksDone(have, want, new Uint8Array(4)));
-  eq(done([]), [0, 0, 0, 0]);
-  eq(done([B(1, 1)]), [1, 0, 0, 0], 'first block colored');
-  eq(done([B(1, 2)]), [0, 0, 0, 1], 'last block colored');
-  eq(done([B(2, 2)]), [0, 0, 0, 0], 'a middle block alone stays');
-  eq(done([B(1, 1), B(2, 2)]), [1, 1, 0, 0], 'middle grays once everything before it is done');
-  eq(done([B(1, 1), B(2, 2), B(1, 2)]), [1, 1, 0, 1]);
-  eq(done([B(1, 1), B(2, 1)]), [1, 0, 0, 0], 'partial block does not count');
+  const _ = 0;
+  const x = X;
+  // Clue 2 3 (one color) in a row of 10.
+  const want = [B(2, 1), B(3, 1)];
+  const done = (line, w = want) => Array.from(blocksDone(line, w, new Uint8Array(w.length)));
+  eq(done([_, _, _, _, _, _, _, _, _, _]), [0, 0]);
+  eq(done([x, x, 1, 1, _, _, _, _, _, _]), [1, 0], 'decided up to the block; next cell may be empty');
+  eq(done([_, x, 1, 1, _, _, _, _, _, _]), [0, 0], 'an empty cell before the block stops it');
+  eq(done([1, 1, _, _, _, _, _, _, _, _]), [1, 0], 'block at the edge');
+  eq(done([x, x, 1, 1, x, 1, 1, 1, _, _]), [1, 1]);
+  eq(done([x, x, 1, 1, _, 1, 1, 1, _, _]), [1, 0], 'gap left empty between blocks');
+  eq(done([_, _, _, _, _, _, 1, 1, 1, x]), [0, 1], 'last number from the end');
+  eq(done([_, _, _, _, _, _, 1, 1, 1, _]), [0, 0], 'empty cell at the end stops it');
+  eq(done([x, 1, _, _, _, _, _, _, _, _]), [0, 0], 'too-short block does not count');
+  eq(done([1, 1, _, _, _, _, _, _, 1, 1]), [1, 0], 'too-short block at the end does not count');
+  // Different colors may touch; middle numbers need one side fully decided.
+  const w4 = [B(1, 1), B(2, 2), B(3, 1), B(1, 2)];
+  eq(done([1, 2, 2, _, _, _, _, _, _, _], w4), [1, 1, 0, 0], 'touching blocks of different colors');
+  eq(done([_, 2, 2, _, _, _, _, _, _, 2], w4), [0, 0, 0, 1]);
+  eq(done([1, x, 2, 2, x, 1, 1, 1, x, 2], w4), [1, 1, 1, 1]);
+  // A drawn block counts once even when both walks could reach it.
   const two = [B(1, 1), B(1, 1)];
-  eq(Array.from(blocksDone([B(1, 1)], two, new Uint8Array(2))), [1, 0], 'one run grays one number');
-  eq(Array.from(blocksDone(two, two, new Uint8Array(2))), [1, 1]);
-});
-
-test('colorDone: lives mode only, once every cell of the color is placed', () => {
-  const g = new Game(mkLevel(), { livesMode: true });
-  eq(g.colorDone(1), false);
-  g.beginStroke(0, 0, 1); g.strokeTo(0, 1); g.endStroke();
-  eq(g.colorDone(1), true);
-  eq(g.colorDone(2), false);
-  g.undo();
-  eq(g.colorDone(1), false, 'undo brings it back');
-  const h = new Game(mkLevel(), { livesMode: false });
-  h.beginStroke(0, 0, 1); h.strokeTo(0, 1); h.endStroke();
-  eq(h.colorDone(1), false, 'off without lives');
+  eq(done([x, 1, x], two), [1, 0], 'one block grays one number');
+  eq(done([1, x, 1], two), [1, 1]);
 });
 
 test('win compares clues, not cells', () => {

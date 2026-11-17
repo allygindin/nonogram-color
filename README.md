@@ -101,9 +101,10 @@ Every puzzle is square, and its size sets its difficulty: **5×5 Easy, 10×10 Me
 - **Drag rule (no-lives mode):** the first cell decides the action. Painting over empty cells fills only empty cells, and
   starting on a cell of the selected color clears only that color. A drag never wipes out other work.
   An X drag that starts on a colored cell marks the empty cells it crosses.
-- **Clue numbers gray out one at a time.** The first and last numbers gray as soon as a matching block
-  is colored at that end of the line. A middle number grays once every block between it and one
-  end is colored too. The whole line grays and fills with X when it matches its clue exactly.
+- **Clue numbers gray out one at a time.** A number grays once its block is colored and every cell
+  from one end of the line up to that block is decided (colored or X). One empty cell before it keeps
+  it dark; the cell right after the block may still be empty. This works in from both ends. The whole
+  line grays and fills with X when it matches its clue exactly.
 - **Random puzzles:** the Easy / Medium / Hard / Expert buttons above the level list make a new
   puzzle (5×5, 10×10, 15×15, 20×20). Each one is an abstract, often mirrored pattern that the
   solver has confirmed has one solution reachable by logic alone. One unfinished random puzzle per
