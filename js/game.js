@@ -141,22 +141,35 @@ export class Game {
   }
 
   // Re-checks touched lines. Lines that now match their clue get their
-  // remaining empty cells auto-filled with X (recorded in `changes`).
+  // remaining empty cells auto-filled with X (recorded in `changes`). Each
+  // auto-X also lands in a crossing line, so that line is re-checked too:
+  // the new X can decide the cells before one of its numbers and gray it.
+  // (An X never changes whether a line is solved, so this doesn't cascade.)
   settleLines(rows, cols, changes) {
+    const touchedRows = new Set();
+    const touchedCols = new Set();
     for (const r of rows) {
       if (!this.checkRow(r)) continue;
-      for (let c = 0; c < this.w; c++) this.autoX(this.idx(r, c), changes);
+      for (let c = 0; c < this.w; c++) {
+        if (this.autoX(this.idx(r, c), changes)) touchedCols.add(c);
+      }
     }
     for (const c of cols) {
       if (!this.checkCol(c)) continue;
-      for (let r = 0; r < this.h; r++) this.autoX(this.idx(r, c), changes);
+      for (let r = 0; r < this.h; r++) {
+        if (this.autoX(this.idx(r, c), changes)) touchedRows.add(r);
+      }
     }
+    for (const r of touchedRows) this.checkRow(r);
+    for (const c of touchedCols) this.checkCol(c);
   }
 
+  // Marks an empty cell X; returns true if it changed.
   autoX(i, changes) {
-    if (this.cells[i] !== 0 || this.flags[i]) return;
+    if (this.cells[i] !== 0 || this.flags[i]) return false;
     this.cells[i] = X;
     changes.push({ i, from: 0, to: X });
+    return true;
   }
 
   markError(i, st) {

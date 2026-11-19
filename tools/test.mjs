@@ -222,6 +222,32 @@ test('solved line greys and auto-fills X; undo reverts all of it', () => {
   eq(g.rowSolved[0], 0);
 });
 
+test('auto-X from a solved row grays numbers in the crossing column', () => {
+  const level = prepareLevel({
+    id: 'x', name: 'X', width: 3, height: 4,
+    palette: ['#e63946', '#457b9d'],
+    solution: [
+      [0, 1, 1],
+      [1, 0, 0],
+      [0, 0, 1],
+      [1, 0, 1],
+    ],
+  });
+  const g = new Game(level, { livesMode: false });
+  g.beginStroke(1, 0, 1); g.endStroke();
+  eq(g.colDone[0][0], 0, 'col 0 first number dark: empty cell above its block');
+  // Solving row 0 (columns 1-2 only) auto-fills (0,0) with X.
+  g.beginStroke(0, 1, 1);
+  g.strokeTo(0, 2);
+  g.endStroke();
+  eq(g.cells[0], X);
+  eq(g.colSolved[0], 0);
+  eq(Array.from(g.colDone[0]), [1, 0], 'col 0 first number grays from the row auto-X');
+  g.undo();
+  eq(g.cells[0], 0);
+  eq(Array.from(g.colDone[0]), [0, 0], 'undo darkens it again');
+});
+
 test('clue numbers gray only when everything up to them is decided', () => {
   const B = (len, color) => ({ len, color });
   const _ = 0;
